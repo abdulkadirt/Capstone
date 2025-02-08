@@ -1,0 +1,222 @@
+Accuracy : hesaplamasak da olur.
+
+Precision : True Positive Rate => TP / (TP + FP)   (+ dediklerimin ne kadarı gerçekten öyle , modelin + işaretleri ne kadar güvenilir ? False Positive endişem var)
+
+-->--> Örneğin, 0.78 precision, modelin churn tahminlerinin %78'inin doğru olduğunu gösterir.
+
+
+Recall : Gerçekte + olanların ne kadarını + olarak işaretleyebiliyor  => (TP / TP + FN )  [FAlse Negative en büyük endişem ise , bu arttıkça yanlış alarmların oranı azalır]
+
+-->--> Örneğin, 0.65 recall, modelin gerçek churn'lerin %65'ini yakaladığını gösterir.
+
+Gerçek churn'lerin ne kadarını yakaladığını gösterir. Özellikle churn'leri kaçırmak istemiyorsan, recall önemlidir.
+
+
+False Positive Rate : Yanlış alarm => FP / (TP + FN) Az olsun istiyorum.
+
+
+id: Müşteri IDsi
+
+Silinmeli zaten.
+
+
+age: Müşterinin yaşı
+
+    yaşlar genel olarak azalan şeklide ilerliyor , en çok müşteri 16-20 yaş arasında sonra 20-24 ve o şekilde sıralı bir şekilde gidiyor.
+    min - 18 
+    max - 80
+    sola çarpık bir veri.
+
+    kategorik hale getirilebilir , ortalama yanıltıcıdır , median dikkate alınabilir ama müşterilerin çoğunun genç sayılabileceği unutulmamalı.
+
+
+
+
+tenure: Müşterinin operatörde geçirdiği toplam süre (ay cinsinden)
+
+    280 aya kadar süre geçirren 8 milyon 400K kişi var yaklaşık olarak. Ondan sonra dikkate değer bir şekilde bu sayı düşüyor.
+
+    Bu değerler yıla dönüştürülebilir , ve kategorik hale getirilebilir yine.
+
+    Bu sütunlar farklı özellikler arasında bir ilişki olup olmadığı mutlaka incelenmelidir!!
+
+
+
+service_type: Ön Ödemeli, Peşin Ödemeli veya Geniş Bant internet müşterisi
+
+Prepaid : Ön ödemeli bağlantı, kullanıcıların kullandıkları telekom hizmetleri için peşin ödeme yapmak zorunda oldukları bir hücresel bağlantıdır
+
+Postpaid : Faturalı bağlantı, kullanıcıların önce telekom hizmetlerini kullandığı ve daha sonra aylık fatura döngüsüne göre ödeme yaptığı bağlantıdır.
+
+Geniş Bant internet müşterisi : Sadece ev interneti almış , yani call_drop olma şansı yok zaten..
+
+Burada bir gruplama yapıp call_drop işini halletmek lazım ayrıca her grubun tenure oranını da incelemek gerekiyor.
+
+Burada eksik veri yok ! tüm alt kategoriler neredeyse eşit dağılmış durumda.
+
+Bunlar arasında faturalı ve faturasızların yaş ortalamalarına bak , ne kadar konuştuklarına bak.
+
+
+avg_call_duration: Ortalama sesli görüşme süresi (saniye)
+
+    * bence bu sütun önemli 
+
+data_usage: GB Upload + Download -> Aylık Ortalama
+    servis tiğine göre data_usage değişimi önemli bir durum bence.
+
+    Burada histogram oluşturunca dağılım düz geliyor.
+    Eksik veri sayısı çok değil ama varbu arada.
+
+roaming_usage:
+     Ortalama roaming sesli görüşme süresi Roaming, bağlı olduğunuz operatörün hizmet sağlama sahasından çıktığınızda farklı bir operatörün sağladığı kapsama saha hizmetini alabilmeniz anlamına geliyor. 
+
+     eksik veri sayısı üstteki gibi fazla değil ama var.
+
+    
+
+monthly_charge: Aylık ortalama fatura.
+    en çok incelenmesi gereken özellik.
+
+    Yaş gruplarının faturaları nasıl değişiyor ? 
+
+    200-400 arasında bir yığılma var .
+    sola çarpık veri söz konusu , ama sağa doğru biraz fazla uzanıor muhtemelen bazı müşteriler kurumsal firma alan 2K tl üstü fatura ödeyenler kişisel kullanıyor olamaz bence.
+
+
+
+overdue_payments: Ödemesi geçen fatura adedi
+Büyük Çoğunluk 0 da yoğunlaşmış durumda. 4.5 milyon kadar.
+
+Kalan ödeme gecikme sayısı ise eşit dağılıyor gibi 1,2,3,4,5 olma ihtimali hemen hemen aynı hepsi 1.1 milyon kişi.
+
+
+auto_payment: Otomatik ödeme talimatı
+    Bu da önemli bir flag ! otomatik ödeme yapan adama sürekli ilgilenmiyordur , kalıcı sayılabilir bi incelemek lazım.
+    % 33 lük bir veri kaybı var bu sütunda.
+
+
+
+avg_top_up_count: 
+    Ön yüklemeli abone için aylık yükleme sayısı ortalaması ????
+    ayda kaç defa kontör yüklemiş , son 6 ayın ortalaması !!! veya 3 ayın ortalaması.
+    
+    
+
+call_drops: Şebekede yaşadığı sesli görüşme kesilmesi.
+    Bu durum fazla yaşanmasına rağmen churn durumu olmayan insanlar kesinlikle ayrılmaz da diyebilirim bence.
+    Hiç drop olmamasına rağmen ayrılıyorsa muhtemelen bizden uzak olsun sınıfı sayılır belki de.
+Eksik veri oranı fazla sayılır : %33
+
+
+
+
+satisfaction_score:
+
+     Müşteri çağrı merkezi değerlendirme skoru
+     missing yok
+     
+
+apps: 
+    Müşterinin kullandığı diğer servislerimiz İzleGo -> 1 RitimGo -> 2 CüzdanX -> 3 HızlıPazar -> 4 Konuşalım -> 5
+
+    Missing: % 0
+    [] : 68%
+    ['Konuşalım'] : 17%
+    ['RitimGo'] : 8%
+    Other : 7%
+
+
+
+#########################################
+## Eksik değerler incelendi !!
+
+Eksik Değer Sayısı  Eksik Yüzde (%)
+avg_call_duration             3297598           36.640
+auto_payment                  3010706           33.452
+roaming_usage                 2997775           33.309
+call_drops                    2997775           33.309
+data_usage                     449655            4.996
+monthly_charge                 225162            2.502
+tenure                          22279            0.248
+
+
+service_type sütununda "Broadband" olanlar için drop_call eksikse 0 ile doldurma.
+
+Eksik değerler Nasıl doldurulmalı : 
+
+**roaming_usage** : 
+Telekom verisinde **roaming_usage** sütunu, müşterinin yurt dışında kullandığı veri, dakika veya SMS miktarını ifade eder.
+Yani aslında bu sütun fazla kullanılıyorsa bu insanların yurtdışında işleri olduğuna inanabiliriz.  Veya eksikse yurtdışına hiç çıkmamış da olabilir. Yani bir yurt dışına çıkmış olmasıyla ilgili (never_out, sometimes_out) tarzında bir özellik eklenebilir.
+
+
+Hızlı Çözüm : 
+Mantık: Eğer bir müşterinin roaming kullanım bilgisi yoksa, muhtemelen hiç kullanmamıştır.
+df['roaming_usage'] = df['roaming_usage'].fillna(0)
+
+Grup Bazlı Doldurma 
+df['roaming_usage'] = df.groupby('customer_segment')['Korelasyonu_yüksek_sütun'].transform(lambda x: x.fillna(x.mean()))
+
+"Bilinmiyor" Kategorisi Oluşturma
+df['roaming_usage'] = df['roaming_usage'].fillna(-1)
+
+
+
+**auto_payment** : 
+    aslında bool bir değer , float olarak kaydedilmiş int e çevirilmeli !! 
+
+"Bilinmiyor" Kategorisi Oluşturma
+Mantık: NaN değerlerini bilinmiyor olarak işaretleyip, bu durumu modelleme sırasında ayrı bir kategori olarak ele almak.
+
+df['auto_payment'] = df['auto_payment'].fillna(-1)  # -1 veya "Bilinmiyor" gibi bir değer
+Avantaj: NaN değerlerin bilgi kaybını önler.
+Dezavantaj: Modelin bu değerleri nasıl yorumlayacağına dikkat etmek gerekir.
+ Modeli Nasıl inceleyeceğiz.
+
+ 
+**avg_call_duration** :
+eğer fatura ödemesi de  yani monthly_charge özelliği de NaN veya 0 ise o zaman konuşma yapmamıştır. --> 0 ile doldurulması gerekir.
+Bu özelliğin diğer özelliklerle neredeyse hiç ilişkisi yok , kalan eksik değerleri de -1 gibi bir bilinmiyor kategorisiyle dolduraibiliriz.
+
+
+**call_drops** : 
+Eğer müşterinin kullandığı servis "Broadband" ise o zaman call_drop olam şansı yok. Yani "service_type" özelliği Broadband" olanları 0 ile doldur.
+Kalanları da ortalama veya medyan. burada dağılım biraz önemli bence.
+
+
+**monthly_charge**
+    Yaş ve avg_top_up_count özelliklerine göre bakmak lazım çok ilişkili gibi duruyor. Bunlara göre bir ortalama falan bakılabilir.
+
+
+**data_usage** : Hiçbir sütunla ilişkisi yok ! buradaki eksik kayıtları silebiliriz de aslında çünkü oran düşük gibi duruyor.
+
+**tenure** : age e göre bişey yapılabilir belki , tek ilişkili olduğu sütun o çünkü. ---> Modele önce bu şekilde verirsen sonra tekrar düşünülebilir.
+
+
+İlerleyince eksik değer analizi için buraya not al!! 
+-> Ödeme eksikliği için sadece konuşma değil data_usage da önemli. Charge , Data usage , Konuşma hepsini değerlendir.
+
+---------------------------------------------
+---------------------------------------------
+---------------------------------------------
+---------------------------------------------
+
+
+🚀 1. Outlier (Aykırı Değer) Analizi Yapmalı Mıyız?
+
+Normalde outlier analizi yapılır ama burada birkaç sebep yüzünden yapmamamız mantıklı:
+
+✅ Dengesiz veri seti var (imbalanced data)
+
+Churn oranı zaten çok düşük, aykırı değerleri temizlemek önemli bilgileri kaybetmemize neden olabilir.
+
+✅ Gradient Boosting modelleri (XGBoost, LightGBM) outlier’lardan fazla etkilenmez!
+
+Ağaç tabanlı modeller (XGBoost, LightGBM, Random Forest) outlier’lara çok duyarlı değildir.
+
+Çünkü ağaç algoritmaları veri noktalarını sıralamaya göre böler, yani uç değerler onların bölme kararlarını fazla etkilemez.
+
+✅ Undersampling yaptıktan sonra, zaten daha dengeli bir veri seti elde ettik.
+
+Eğer outlier temizlersek, zaten az olan churn örneklerinden bazılarını yanlışlıkla silebiliriz.
+
+📌 SONUÇ: Outlier analizi yapmadan devam ediyoruz! 🚀
